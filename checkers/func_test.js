@@ -4,9 +4,9 @@
 // but with the following changes:
 //
 // - Added test_eq() to simplify test harness
+// - Changed to leverage exported piece values instead of values defined locally
 
-function test_eq(test_name, test_func, expected) {
-	let got = test_func();
+function test_eq(test_name, got, expected) {
 	if (got === expected) {
 	  console.log('%c PASS ', 'background: #008000; color: #FFFFFF', `${test_name}: Expected ${expected}, got ${got}`);
 	} else {
@@ -27,19 +27,23 @@ fetch('./checkers.wasm')
 		console.log("Loaded WASM module");
 		console.log("Instance", instance);
 
-		var black = 1;
-		var white = 2;
-		var crowned_black = 5;
-		var crowned_white = 6;
+		const black = checkers.BLACK.value;
+		const white = checkers.WHITE.value;
+		const crownedBlack = black + checkers.CROWN.value;
+		const crownedWhite = white + checkers.CROWN.value;
 
-		test_eq("Offset for (3,4)", () => checkers.offsetForPosition(3, 4), 140);
-		test_eq("Black is black?", () => checkers.isBlack(black), 1);
-		test_eq("White is white?", () => checkers.isWhite(white), 1);
-		test_eq("Black is white?", () => checkers.isWhite(black), 0);
-		test_eq("White is black?", () => checkers.isBlack(white), 0);
-		test_eq("Uncrowned white", () => checkers.isWhite(instance.exports.withoutCrown(crowned_white)), 1);
-		test_eq("Uncrowned black", () => checkers.isBlack(instance.exports.withoutCrown(crowned_black)), 1);
-		test_eq("Crowned black is crowned", () => checkers.isCrowned(crowned_black), 1);
-		test_eq("Crowned white is crowned", () => checkers.isCrowned(crowned_white), 1);
+		test_eq("Offset for (3,4)", checkers.offsetForPosition(3, 4), 140);
+		test_eq("Black is black?", checkers.isBlack(black), 1);
+		test_eq("White is white?", checkers.isWhite(white), 1);
+		test_eq("Black is white?", checkers.isWhite(black), 0);
+		test_eq("White is black?", checkers.isBlack(white), 0);
+		test_eq("Uncrowned white", checkers.isWhite(instance.exports.withoutCrown(crownedWhite)), 1);
+		test_eq("Uncrowned black", checkers.isBlack(instance.exports.withoutCrown(crownedBlack)), 1);
+		test_eq("Crowned black is crowned", checkers.isCrowned(crownedBlack), 1);
+		test_eq("Crowned white is crowned", checkers.isCrowned(crownedWhite), 1);
+		checkers.setPiece(3, 4, black);
+		test_eq("Storing black at (3,4)", checkers.getPiece(3, 4), black);
+		checkers.setPiece(3, 5, white);
+		test_eq("Storing white at (3,5)", checkers.getPiece(3, 5), white);
 	});
 
