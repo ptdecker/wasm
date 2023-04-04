@@ -10,15 +10,21 @@
 ;; - Added export of piece type identifiers as globals
 
 (module
+
+  ;; Imports
+  (import "events" "piececrowned"
+    (func $notify_piececrowned (param $pieceX i32) (param $pieceY i32)))
+
+  ;; Allocate memory
   (memory $men 1)
 
-  ;; Globals
+   ;; Globals
   (global $BLACK (export "BLACK") i32 (i32.const 1))
   (global $WHITE (export "WHITE") i32 (i32.const 2))
   (global $CROWN (export "CROWN") i32 (i32.const 4))
   (global $currentTurn (mut i32) (i32.const 0))
 
-  ;; offsetForPosition = 4 * indexForPosition [4 * ((8 * x) + y)]
+ ;; offsetForPosition = 4 * indexForPosition [4 * ((8 * x) + y)]
   (func $offsetForPosition (export "offsetForPosition") (param $x i32) (param $y i32) (result i32)
     (i32.shl
       (i32.add
@@ -124,5 +130,37 @@
       (i32.const 0)
     )
   )
+
+  ;; Should this piece get crowned?
+  ;; Black pieces are crowned in row 0 and white in row 7
+  (func $shouldCrown (export "shouldCrown") (param $pieceY i32) (param $piece i32) (result i32)
+    (i32.or
+      (i32.and
+        (i32.eq
+          (local.get $pieceY)
+          (i32.const 0))
+        (call $isBlack (local.get $piece)))
+      (i32.and
+        (i32.eq
+          (local.get $pieceY)
+          (i32.const 7))
+        (call $isWhite (local.get $piece)))
+    )
+  )
+
+  ;; Crown a piece and invoke a host notifier
+  (func $crownPiece (export "crownPiece") (param $x i32) (param $y i32)
+    (local $piece i32)
+    (local.set $piece (call $getPiece (local.get $x) (local.get $y)))
+    (call $setPiece (local.get $x) (local.get $y)
+      (call $withCrown (local.get $piece)))
+    (call $notify_piececrowned (local.get $x) (local.get $y))
+  )
+
+  ;; Calculate distance
+  (func $distance (param $x i32) (param $y i32) (result i32)
+    (i32.sub (local.get $x) (local.get $y))
+  )
 )
+
 

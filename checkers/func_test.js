@@ -18,7 +18,13 @@ function test_eq(test_name, got, expected) {
 console.log("Starting tests");
 fetch('./checkers.wasm')
   .then(response => response.arrayBuffer())
-  .then(bytes => WebAssembly.instantiate(bytes))
+  .then(bytes => WebAssembly.instantiate(bytes, {
+    events: {
+      piececrowned: (x, y) => {
+        console.log(`A piece was crowned at (${x}, ${y})`);
+      }
+    },
+  }))
   .then(results => {
 
     instance = results.instance;
@@ -54,5 +60,15 @@ fetch('./checkers.wasm')
     checkers.toggleTurnOwner();
     test_eq("After toggling it should now be black's turn", checkers.isPlayersTurn(black), 1);
     test_eq("And, no longer white's turn", checkers.isPlayersTurn(white), 0);
+    test_eq("Black on row 0, should be crowned:", checkers.shouldCrown(0, black), 1);
+    test_eq("White on row 0, should not be crowned:", checkers.shouldCrown(0, white), 0);
+    test_eq("Black on row 7, should not be crowned:", checkers.shouldCrown(7, black), 0);
+    test_eq("Black on row 7, should be crowned:", checkers.shouldCrown(7, white), 1);
+    test_eq("Black on row 3, should not be crowned:", checkers.shouldCrown(3, black), 0);
+    test_eq("White on row 3, should not be crowned:", checkers.shouldCrown(3, white), 0);
+    checkers.setPiece(0, 0, black);
+    test_eq("Before crowning black at (0,0):", checkers.getPiece(0, 0), black);
+    checkers.crownPiece(0, 0);
+    test_eq("After crowning black at (0,0):", checkers.getPiece(0, 0), crownedBlack);
   });
 
