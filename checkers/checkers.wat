@@ -14,6 +14,8 @@
   ;; Imports
   (import "events" "piececrowned"
     (func $notify_piececrowned (param $pieceX i32) (param $pieceY i32)))
+  (import "events" "piecemoved"
+    (func $notify_piecemoved (param $fromX i32) (param $fromY i32) (param $toX i32) (param $toY i32)))
 
   ;; Allocate memory
   (memory $men 1)
@@ -194,6 +196,31 @@
     )
     (i32.le_u (local.get $d) (i32.const 2))
   )
-)
 
+  ;; Exported move funciton called by the game host
+  (func $move (export "move") (param $fromX i32) (param $fromY i32) (param $toX i32) (param $toY i32) (result i32)
+    (if (result i32)
+      (block (result i32)
+        (call $isValidMove (local.get $fromX) (local.get $fromY) (local.get $toX) (local.get $toY))
+      )
+      (then (call $do_move (local.get $fromX) (local.get $fromY) (local.get $toX) (local.get $toY)))
+      (else (i32.const 0))
+    )
+  )  
+
+  ;; Internal move function that performs the actual move, if valid, of the target.
+  ;; TODO: Remove opponent piece during a jump
+  ;; TODO: Detect win condition
+  (func $do_move (param $fromX i32) (param $fromY i32) (param $toX i32) (param $toY i32) (result i32)
+    (local $curpiece i32)
+    (local.set $curpiece (call $getPiece (local.get $fromX) (local.get $fromY)))
+    (call $toggleTurnOwner)
+    (call $setPiece (local.get $toX) (local.get $toY) (local.get $curpiece))
+    (call $setPiece (local.get $fromX) (local.get $fromY) (i32.const 0))
+    (if (call $shouldCrown (local.get $toY) (local.get $curpiece))
+      (then (call $crownPiece (local.get $toX) (local.get $toY))))
+    (call $notify_piecemoved (local.get $fromX) (local.get $fromY) (local.get $toX) (local.get $toY))
+    (i32.const 1)
+  )
+)
 
