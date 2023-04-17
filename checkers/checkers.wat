@@ -161,6 +161,39 @@
   (func $distance (param $x i32) (param $y i32) (result i32)
     (i32.sub (local.get $x) (local.get $y))
   )
+
+  ;; Determine if move is valid
+  (func $isValidMove (export "isValidMove") (param $fromX i32) (param $fromY i32) (param $toX i32) (param $toY i32) (result i32)
+    (local $player i32)
+    (local $target i32)
+    (local.set $player (call $getPiece (local.get $fromX) (local.get $fromY)))
+    (local.set $target (call $getPiece (local.get $toX) (local.get $toY)))
+    (if (result i32)
+      (block (result i32)
+        (i32.and
+          (call $validJumpDistance (local.get $fromY) (local.get $toY))
+          (i32.and
+            (call $isPlayersTurn (local.get $player))
+            (i32.eq (local.get $target) (i32.const 0))
+          )
+        )
+      )
+    (then (i32.const 1))
+    (else (i32.const 0)))
+  )
+
+  ;; Ensures travel is one or two squares
+  (func $validJumpDistance (param $from i32) (param $to i32) (result i32)
+    (local $d i32)
+    (local.set $d
+      (if (result i32)
+        (i32.gt_s (local.get $to) (local.get $from))
+        (then (call $distance (local.get $to) (local.get $from)))
+        (else (call $distance (local.get $from) (local.get $to)))
+      )
+    )
+    (i32.le_u (local.get $d) (i32.const 2))
+  )
 )
 
 
