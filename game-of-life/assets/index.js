@@ -70,10 +70,8 @@ const drawCells = () => {
 
 const renderLoop = () => {
     universe.tick();
-
     drawGrid();
     drawCells();
-
     requestAnimationFrame(renderLoop);
 };
 

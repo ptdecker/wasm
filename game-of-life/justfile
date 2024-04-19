@@ -1,7 +1,11 @@
-build:
+lint:
+    cargo fmt
+    cargo clippy
+
+build: lint
     source ./build.sh
 
-test:
+test: build
     wasm-pack test --node
 
 run:

@@ -3,8 +3,14 @@
 mod utils;
 
 use core::{self, fmt};
-use js_sys;
 use wasm_bindgen::prelude::*;
+
+// A macro to provide `println!(..)`-style syntax for `console.log` logging.
+macro_rules! log {
+    ( $( $t:tt )* ) => {
+        web_sys::console::log_1(&format!( $( $t )* ).into());
+    }
+}
 
 // A single cell in the universe
 #[wasm_bindgen]
@@ -27,12 +33,14 @@ pub struct Universe {
 impl Universe {
     /// Create a new universe
     pub fn new() -> Universe {
+        utils::set_panic_hook();
+
         let width = 64;
         let height = 64;
 
         let cells = (0..width * height)
             .map(|_| {
-                    if js_sys::Math::random() < 0.5 {
+                if js_sys::Math::random() < 0.5 {
                     Cell::Alive
                 } else {
                     Cell::Dead
@@ -153,7 +161,12 @@ impl Universe {
             self.cells[idx] = Cell::Alive;
         }
     }
+}
 
+impl Default for Universe {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl fmt::Display for Universe {
@@ -163,15 +176,9 @@ impl fmt::Display for Universe {
                 let symbol = if cell == Cell::Dead { '◻' } else { '◼' };
                 write!(f, "{}", symbol)?;
             }
-            write!(f, "\n")?;
+            writeln!(f)?;
         }
 
         Ok(())
     }
-}
-
-/// Initialize the game engine
-#[wasm_bindgen]
-pub fn init() {
-    utils::set_panic_hook()
 }

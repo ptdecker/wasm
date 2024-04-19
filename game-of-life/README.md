@@ -27,4 +27,5 @@ as needed to get things going. The `www` directory is ignored in `.gitignore`
 
 Version tags:
 * [Commit 5252cec](https://github.com/ptdecker/wasm/commit/5252cec2a8f6cb1a8bb2cb2d46a0939372b6fbc1) - Tutorial 4.4
-
+* [Commit 57dbc5b](https://github.com/ptdecker/wasm/commit/57dbc5ba341eaa479a14b314ee5b01f2b4f77601) - Tutorial 4.5
+* 
