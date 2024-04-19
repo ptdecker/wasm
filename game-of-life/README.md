@@ -29,3 +29,4 @@ Version tags:
 * [Commit 5252cec](https://github.com/ptdecker/wasm/commit/5252cec2a8f6cb1a8bb2cb2d46a0939372b6fbc1) - Tutorial 4.4
 * [Commit 57dbc5b](https://github.com/ptdecker/wasm/commit/57dbc5ba341eaa479a14b314ee5b01f2b4f77601) - Tutorial 4.5
 * [Commit 9fba0a9](https://github.com/ptdecker/wasm/commit/9fba0a9d27b94989ab3712721cb678a5b0f80974) - Tutorial 4.6
+* [Commit 1fd37bb](https://github.com/ptdecker/wasm/commit/1fd37bbda8aae3cbd89ce15c14c3e98bda74c85d) - Tutorial 4.7
