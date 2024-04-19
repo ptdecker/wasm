@@ -6,6 +6,7 @@ use core::{self, fmt};
 use wasm_bindgen::prelude::*;
 
 // A macro to provide `println!(..)`-style syntax for `console.log` logging.
+#[allow(unused_macros)]
 macro_rules! log {
     ( $( $t:tt )* ) => {
         web_sys::console::log_1(&format!( $( $t )* ).into());
@@ -19,6 +20,15 @@ macro_rules! log {
 pub enum Cell {
     Dead = 0,
     Alive = 1,
+}
+
+impl Cell {
+    fn toggle(&mut self) {
+        *self = match *self {
+            Cell::Dead => Cell::Alive,
+            Cell::Alive => Cell::Dead,
+        };
+    }
 }
 
 /// The universe
@@ -146,8 +156,14 @@ impl Universe {
 
         self.cells = next;
     }
+
+    pub fn toggle_cell(&mut self, row: u32, column: u32) {
+        let idx = self.index(row, column);
+        self.cells[idx].toggle();
+    }
 }
 
+/// Universe methods private to WASM module (not exported to JavaScript)
 impl Universe {
     /// Get the dead and alive values of the entire universe.
     pub fn get_cells(&self) -> &[Cell] {
