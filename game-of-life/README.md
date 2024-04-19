@@ -23,4 +23,8 @@ as needed to get things going. The `www` directory is ignored in `.gitignore`
 * Once built, you can use `just run` to start the web server.
 * You can then browse to http://localhost:8080/ to run it.
 * I have not tested this on anything other than my Mac (M1 Pro with Sonoma)
+* `just test` can be used to run the tests.
+
+Version tags:
+* [Commit 5252cec](https://github.com/ptdecker/wasm/commit/5252cec2a8f6cb1a8bb2cb2d46a0939372b6fbc1) - Tutorial 4.4
 
