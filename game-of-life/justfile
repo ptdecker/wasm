@@ -1,5 +1,5 @@
 build:
-    wasm-pack build
+    source ./build.sh
 
 run:
     cd www && npm run start
